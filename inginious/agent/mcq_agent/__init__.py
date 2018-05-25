@@ -3,6 +3,7 @@
 # This file is part of INGInious. See the LICENSE and the COPYRIGHTS files for
 # more information about the licensing of this file.
 import json
+import asyncio
 import logging
 import gettext
 
@@ -43,6 +44,8 @@ class MCQAgent(Agent):
         try:
             self._logger.info("Received request for jobid %s", msg.job_id)
             task = self.course_factory.get_task(msg.course_id, msg.task_id)
+        except asyncio.CancelledError:
+            raise
         except Exception as e:
             self._logger.error("Task %s/%s not available on this agent", msg.course_id, msg.task_id)
             raise CannotCreateJobException("Task is not available on this agent")
